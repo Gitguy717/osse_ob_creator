@@ -22,6 +22,8 @@ import numpy as np
 import pandas as pd
 import sys
 import yaml
+import csv
+import copy
 
 import pyDA_utils.bufr as bufr
 
@@ -67,7 +69,9 @@ uas_reverse = False
 if len(sys.argv) > 1:
     bufr_t = sys.argv[1]
     out_fname = sys.argv[2]
-    with open(sys.argv[3], 'r') as fptr:
+    remove_down=sys.argv[3]
+    lim_dir=sys.argv[4]
+    with open(sys.argv[5], 'r') as fptr:
         param = yaml.safe_load(fptr)
     valid_times = [dt.datetime.strptime(bufr_t, '%Y%m%d%H%M')]
     flight_times = [valid_times[0] + dt.timedelta(seconds=param['create_csv']['uas_offset'])]
@@ -79,6 +83,7 @@ if len(sys.argv) > 1:
     init_sid = param['create_csv']['init_sid']
     sample_bufr_fname = param['create_csv']['sample_bufr_fname']
     uas_reverse = param['create_csv']['uas_reverse']
+
 
 #---------------------------------------------------------------------------------------------------
 # Create UAS BUFR CSV
@@ -144,8 +149,51 @@ for valid, start in zip(valid_times, flight_times):
     out_dict['CAT'] = np.ones(ntobs)
 
     out_df = pd.DataFrame(out_dict)
-    bufr.df_to_csv(out_df, out_fname % valid.strftime('%Y%m%d%H%M'))
 
+#---------------------------------------------------------------------------------------------------
+# Remove Corresponding Flight Legs
+#---------------------------------------------------------------------------------------------------
+
+if remove_down == 'True':
+    print('Removing all down profiles where upward profile flights were cancelled for the previous hour')
+        
+    # Valid hour for the flights we are looking at
+    date_time = out_df.iloc[2,2]
+    # Corresponding up profiles from an hour earlier that were limited 
+    prev_time = int(date_time) - 1
+        
+    print('Reading from {}/lim_list_{}00.csv'.format(lim_dir,prev_time))
+    lim_csv=csv.reader(open('{}/lim_list_{}00.csv'.format(lim_dir,prev_time)))
+    lim_data=[]
+    for row in lim_csv:
+    # Appends the data in the entire file
+     lim_data.append(row)
+    
+    # If for a given flight, at least one of the limit fields is True, then elimiate the corresponding down profile
+    lim_arr = np.array(lim_data)
+    all_sites = lim_arr[1:,0]
+    UA_sites = np.unique(all_sites)
+    out_lim_list = []
+        
+    for site in range(len(UA_sites)):
+        include_site = True
+            
+        for i in range(1,lim_arr.shape[0]):
+            if (lim_arr[i][0] == UA_sites[site]):
+                if lim_arr[i][2] == 'True':
+                    # Remove condition
+                    include_site = False
+            
+        if include_site: # Now we will add back observations that we want to include
+            print('Including site ', site,' ', include_site)
+            for ob in range(out_df.shape[0]): 
+                if str(out_df['SID'][ob]) == str(UA_sites[site])[1:len(str(UA_sites[site]))-1]:  # If index is for our UA site to include:
+                    print('Adding ob ', out_df.iloc[ob])
+                    out_lim_list.append(out_df.iloc[ob])   
+                    
+    out_df = pd.DataFrame(out_lim_list)
+
+bufr.df_to_csv(out_df, out_fname % valid.strftime('%Y%m%d%H%M'))
 
 """
 End create_uas_csv.py
