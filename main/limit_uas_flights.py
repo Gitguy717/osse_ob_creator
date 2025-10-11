@@ -87,7 +87,7 @@ for typ in limits_param.keys():
 
         # Icing detection (using RH threshold)
         if lim_type == 'icing_RH' and limits_param[typ][lim_type]['use']:
-            bbufr_obj_ref = lp.detect_icing_RH(bufr_obj_ref,working_dir, write_lim_to_file, thermo_type=typ, 
+            bufr_obj_ref = lp.detect_icing_RH(bufr_obj_ref,working_dir, write_lim_to_file, thermo_type=typ, 
                                               **limits_param[typ][lim_type]['lim_kw'])
 
         # Icing detection (using ql threshold)
