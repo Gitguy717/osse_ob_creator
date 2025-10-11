@@ -289,6 +289,8 @@ for bufr_t in bufr_times:
             fptr.write('echo "Using osse_ob_creator version `git describe`"\n')
             fptr.write('python -u create_uas_csv.py %s \\\n' % t_str)
             fptr.write('                            %s \\\n' % fake_csv_bogus_fname)
+            fptr.write('                            %s \\\n' % (param['create_csv']['rem_down_if_up_lim']))
+            fptr.write('                            %s \\\n' % (param['paths']['syn_limit_uas_csv']))
             fptr.write('                            %s/%s \n\n' % (param['paths']['osse_code'], in_yaml))
             convert_csv_fname = fake_csv_bogus_fname
             if param['jobs']['use_rocoto']: close_file(fptr)
@@ -354,10 +356,18 @@ for bufr_t in bufr_times:
             fptr.write('echo "Using osse_ob_creator version `git describe`"\n')
             fptr.write('python -u limit_uas_flights.py %s \\\n' % t_str)
             fptr.write('                               %s \\\n' % tag)
+            fptr.write('                               %s \\\n' % (param['paths']['osse_code']))
+            fptr.write('                               %s \\\n' % (param['limit_uas']['write_lim_to_file']))
             fptr.write('                               %s/%s \n' % (param['paths']['osse_code'], in_yaml))
+            fptr.write('cd ..\n')
+            #try:
+            fptr.write('mv lim_list_%s.csv %s\n\n' % (t_str,param['paths']['syn_limit_uas_csv']))
+            #except 
             fptr.write('mv %s/%s.%s.output.csv %s\n\n' % (param['paths']['syn_limit_uas_csv'], 
                                                           t_str, tag, 
                                                           fake_csv_limit_uas_fname))
+                                                          
+            
             if param['limit_uas']['plot_timeseries']['use']:
                 fptr.write('mkdir -p %s/%s\n' % (param['paths']['plots'], t_str))
                 fptr.write('cd %s/plotting\n' % param['paths']['osse_code'])
