@@ -81,6 +81,7 @@ create_csv:
   sample_bufr_fname: '/work/noaa/wrfruc/murdzek/nature_run_winter/obs/perfect_conv/real_csv/202202010000.rap.prepbufr.csv'
   uas_offset: 0.
   uas_reverse: False
+  rem_down_if_up_lim: False
 
 interpolator: 
   use: False
@@ -129,11 +130,22 @@ limit_uas:
   limits:
     236:
       wind:
+        use: True
         lim_kw:
           lim: 20
         remove_kw:
           match_type:
             - 136
+          nthres: 1
+    136:
+      icing_LIQMR:
+        use: False
+        lim_kw:
+          tob_lim: 0
+          ql_lim: 1.0e-10
+        remove_kw:
+          match_type:
+            - 236
           nthres: 1
   plot_timeseries:
     use: True
