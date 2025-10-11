@@ -36,7 +36,7 @@ if len(sys.argv) > 1:
         param = yaml.safe_load(fptr)
     in_csv_fname = f"{param['paths']['syn_limit_uas_csv']}/{bufr_t}.{tag}.input.csv"
     out_csv_fname = f"{param['paths']['syn_limit_uas_csv']}/{bufr_t}.{tag}.output.csv"
-    csv_ref_fname = f"{param['paths']['syn_perf_csv']}/{bufr_t}.{tag}.fake.prepbufr.csv"
+    csv_ref_fname = f"{param['paths'][param['limit_uas']['csv_ref_dir']]}/{bufr_t}.{tag}.fake.prepbufr.csv"
     drop_col = param['limit_uas']['drop_col']
     verbose = param['limit_uas']['verbose']
     limits_param = param['limit_uas']['limits']
