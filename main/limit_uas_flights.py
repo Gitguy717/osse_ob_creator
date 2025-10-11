@@ -82,17 +82,17 @@ for typ in limits_param.keys():
 
         # Wind speed limit
         if lim_type == 'wind' and limits_param[typ][lim_type]['use']:
-            bufr_obj_ref = lp.wspd_limit(bufr_obj_ref, wind_type=typ,
+            bufr_obj_ref = lp.wspd_limit(bufr_obj_ref,working_dir, write_lim_to_file, wind_type=typ, 
                                          **limits_param[typ][lim_type]['lim_kw'])
 
         # Icing detection (using RH threshold)
         if lim_type == 'icing_RH' and limits_param[typ][lim_type]['use']:
-            bufr_obj_ref = lp.detect_icing_RH(bufr_obj_ref, thermo_type=typ,
+            bbufr_obj_ref = lp.detect_icing_RH(bufr_obj_ref,working_dir, write_lim_to_file, thermo_type=typ, 
                                               **limits_param[typ][lim_type]['lim_kw'])
 
         # Icing detection (using ql threshold)
         if lim_type == 'icing_LIQMR' and limits_param[typ][lim_type]['use']:
-            bufr_obj_ref = lp.detect_icing_LIQMR(bufr_obj_ref, thermo_type=typ,
+            bufr_obj_ref = lp.detect_icing_LIQMR(bufr_obj_ref, working_dir, write_lim_to_file, thermo_type=typ,
                                                  **limits_param[typ][lim_type]['lim_kw'])
 
         # Remove BUFR obs that exceed the limit
