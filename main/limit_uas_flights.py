@@ -30,11 +30,13 @@ import pyDA_utils.limit_prepbufr as lp
 if len(sys.argv) > 1:
     bufr_t = sys.argv[1]
     tag = sys.argv[2]
-    with open(sys.argv[3], 'r') as fptr:
+    working_dir = sys.argv[3]
+    write_lim_to_file = sys.argv[4]
+    with open(sys.argv[5], 'r') as fptr:
         param = yaml.safe_load(fptr)
     in_csv_fname = f"{param['paths']['syn_limit_uas_csv']}/{bufr_t}.{tag}.input.csv"
     out_csv_fname = f"{param['paths']['syn_limit_uas_csv']}/{bufr_t}.{tag}.output.csv"
-    csv_ref_fname = f"{param['paths'][param['limit_uas']['csv_ref_dir']]}/{bufr_t}.{tag}.fake.prepbufr.csv"
+    csv_ref_fname = f"{param['paths']['syn_perf_csv']}/{bufr_t}.{tag}.fake.prepbufr.csv"
     drop_col = param['limit_uas']['drop_col']
     verbose = param['limit_uas']['verbose']
     limits_param = param['limit_uas']['limits']
@@ -79,17 +81,17 @@ for typ in limits_param.keys():
         if verbose > 1: print('  applying limits', dt.datetime.now())
 
         # Wind speed limit
-        if lim_type == 'wind':
+        if lim_type == 'wind' and limits_param[typ][lim_type]['use']:
             bufr_obj_ref = lp.wspd_limit(bufr_obj_ref, wind_type=typ,
                                          **limits_param[typ][lim_type]['lim_kw'])
 
         # Icing detection (using RH threshold)
-        if lim_type == 'icing_RH':
+        if lim_type == 'icing_RH' and limits_param[typ][lim_type]['use']:
             bufr_obj_ref = lp.detect_icing_RH(bufr_obj_ref, thermo_type=typ,
                                               **limits_param[typ][lim_type]['lim_kw'])
 
         # Icing detection (using ql threshold)
-        if lim_type == 'icing_LIQMR':
+        if lim_type == 'icing_LIQMR' and limits_param[typ][lim_type]['use']:
             bufr_obj_ref = lp.detect_icing_LIQMR(bufr_obj_ref, thermo_type=typ,
                                                  **limits_param[typ][lim_type]['lim_kw'])
 
