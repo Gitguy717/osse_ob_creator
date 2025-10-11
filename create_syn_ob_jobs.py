@@ -360,14 +360,10 @@ for bufr_t in bufr_times:
             fptr.write('                               %s \\\n' % (param['limit_uas']['write_lim_to_file']))
             fptr.write('                               %s/%s \n' % (param['paths']['osse_code'], in_yaml))
             fptr.write('cd ..\n')
-            #try:
             fptr.write('mv lim_list_%s.csv %s\n\n' % (t_str,param['paths']['syn_limit_uas_csv']))
-            #except 
             fptr.write('mv %s/%s.%s.output.csv %s\n\n' % (param['paths']['syn_limit_uas_csv'], 
                                                           t_str, tag, 
                                                           fake_csv_limit_uas_fname))
-                                                          
-            
             if param['limit_uas']['plot_timeseries']['use']:
                 fptr.write('mkdir -p %s/%s\n' % (param['paths']['plots'], t_str))
                 fptr.write('cd %s/plotting\n' % param['paths']['osse_code'])
