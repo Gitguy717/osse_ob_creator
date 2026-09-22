@@ -122,6 +122,7 @@ obs_errors:
 
 limit_uas:
   use: True
+  write_lim_to_file: True
   in_csv_dir: 'syn_perf_csv'
   csv_ref_dir: 'syn_perf_csv'
   drop_col:
