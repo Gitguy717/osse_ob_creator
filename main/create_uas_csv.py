@@ -193,7 +193,12 @@ if remove_down == 'True':
                     
     out_df = pd.DataFrame(out_lim_list)
 
-bufr.df_to_csv(out_df, out_fname % valid.strftime('%Y%m%d%H%M'))
+try:
+    bufr.df_to_csv(out_df, out_fname % valid.strftime('%Y%m%d%H%M'))
+except KeyError:
+    print('Unable to save an empty data frame. Likely due to all prior corresponding flights limited by local meteorology.')
+    sys.exit(1)
+
 
 """
 End create_uas_csv.py
