@@ -115,9 +115,11 @@ if verbose > 0:
 
 # Remove intermediate fields and save results
 if verbose > 1: print('removing intermediate columns', dt.datetime.now())
-bufr_obj.df.drop(drop_col, axis=1, inplace=True)
+try:
+    bufr_obj.df.drop(drop_col, axis=1, inplace=True)
+except KeyError:
+    print('KeyError WARNING: columns to drop were not found in dataframe.')
 bufr.df_to_csv(bufr_obj.df, out_csv_fname)
-
 # Timing
 if verbose > 1:
     print()
